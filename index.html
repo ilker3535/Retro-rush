@@ -4,33 +4,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
 <title>RETRO RUSH by RetroComp</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
 
-/* Fallback font faces in case Google Fonts fails */
+/* Direct font loading as backup */
 @font-face {
 font-family: ‘Press Start 2P’;
-src: url(‘https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK0nR.woff2’) format(‘woff2’);
-font-display: swap;
+font-style: normal;
+font-weight: 400;
+src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK0nRwqkoh8HMT38.woff2) format(‘woff2’);
+unicode-range: U+0000-00FF;
 }
 @font-face {
 font-family: ‘VT323’;
-src: url(‘https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJU.woff2’) format(‘woff2’);
-font-display: swap;
-}
-
-:root {
-–green: #00ff41;
-–amber: #ffb000;
-–cyan: #00ffff;
-–red: #ff003c;
-–dark: #0a0a0a;
-–scanline: rgba(0,0,0,0.15);
+font-style: normal;
+font-weight: 400;
+src: url(https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJXx.woff2) format(‘woff2’);
+unicode-range: U+0000-00FF;
 }
 
 - { margin: 0; padding: 0; box-sizing: border-box; }
@@ -52,7 +43,7 @@ width: 100%;
 max-width: 420px;
 height: 100vh;
 max-height: 780px;
-background: var(–dark);
+background: #0a0a0a;
 overflow: hidden;
 border-radius: 12px;
 box-shadow:
@@ -69,8 +60,8 @@ position: absolute;
 inset: 0;
 background: repeating-linear-gradient(
 0deg,
-var(–scanline) 0px,
-var(–scanline) 1px,
+rgba(0,0,0,0.15) 0px,
+rgba(0,0,0,0.15) 1px,
 transparent 1px,
 transparent 3px
 );
@@ -125,10 +116,10 @@ margin-bottom: 30px;
 .title-logo .line1 {
 font-family: ‘Press Start 2P’, monospace;
 font-size: clamp(28px, 8vw, 42px);
-color: var(–green);
+color: #00ff41;
 text-shadow:
-0 0 10px var(–green),
-0 0 30px var(–green),
+0 0 10px #00ff41,
+0 0 30px #00ff41,
 0 0 60px rgba(0,255,65,0.5);
 display: block;
 letter-spacing: 4px;
@@ -138,10 +129,10 @@ animation: pulse-glow 2s ease-in-out infinite;
 .title-logo .line2 {
 font-family: ‘Press Start 2P’, monospace;
 font-size: clamp(28px, 8vw, 42px);
-color: var(–amber);
+color: #ffb000;
 text-shadow:
-0 0 10px var(–amber),
-0 0 30px var(–amber),
+0 0 10px #ffb000,
+0 0 30px #ffb000,
 0 0 60px rgba(255,176,0,0.5);
 display: block;
 letter-spacing: 4px;
@@ -149,12 +140,12 @@ animation: pulse-glow-amber 2s ease-in-out infinite 0.3s;
 }
 
 @keyframes pulse-glow {
-0%, 100% { text-shadow: 0 0 10px var(–green), 0 0 30px var(–green), 0 0 60px rgba(0,255,65,0.5); }
-50% { text-shadow: 0 0 20px var(–green), 0 0 50px var(–green), 0 0 100px rgba(0,255,65,0.8); }
+0%, 100% { text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41, 0 0 60px rgba(0,255,65,0.5); }
+50% { text-shadow: 0 0 20px #00ff41, 0 0 50px #00ff41, 0 0 100px rgba(0,255,65,0.8); }
 }
 @keyframes pulse-glow-amber {
-0%, 100% { text-shadow: 0 0 10px var(–amber), 0 0 30px var(–amber), 0 0 60px rgba(255,176,0,0.5); }
-50% { text-shadow: 0 0 20px var(–amber), 0 0 50px var(–amber), 0 0 100px rgba(255,176,0,0.8); }
+0%, 100% { text-shadow: 0 0 10px #ffb000, 0 0 30px #ffb000, 0 0 60px rgba(255,176,0,0.5); }
+50% { text-shadow: 0 0 20px #ffb000, 0 0 50px #ffb000, 0 0 100px rgba(255,176,0,0.8); }
 }
 
 .era-showcase {
@@ -171,10 +162,10 @@ border: 2px solid;
 animation: badge-cycle 3s infinite;
 }
 
-.era-badge:nth-child(1) { color: var(–cyan); border-color: var(–cyan); animation-delay: 0s; }
-.era-badge:nth-child(2) { color: var(–amber); border-color: var(–amber); animation-delay: 0.5s; }
-.era-badge:nth-child(3) { color: var(–red); border-color: var(–red); animation-delay: 1s; }
-.era-badge:nth-child(4) { color: var(–green); border-color: var(–green); animation-delay: 1.5s; }
+.era-badge:nth-child(1) { color: #00ffff; border-color: #00ffff; animation-delay: 0s; }
+.era-badge:nth-child(2) { color: #ffb000; border-color: #ffb000; animation-delay: 0.5s; }
+.era-badge:nth-child(3) { color: #ff003c; border-color: #ff003c; animation-delay: 1s; }
+.era-badge:nth-child(4) { color: #00ff41; border-color: #00ff41; animation-delay: 1.5s; }
 
 @keyframes badge-cycle {
 0%, 100% { opacity: 1; transform: scale(1); }
@@ -194,32 +185,32 @@ letter-spacing: 2px;
 font-family: ‘Press Start 2P’, monospace;
 font-size: 16px;
 color: #000;
-background: var(–green);
+background: #00ff41;
 border: none;
 padding: 16px 32px;
 cursor: pointer;
 text-transform: uppercase;
 letter-spacing: 2px;
-box-shadow: 0 0 20px var(–green), 4px 4px 0 #004d14;
+box-shadow: 0 0 20px #00ff41, 4px 4px 0 #004d14;
 transition: all 0.1s;
 animation: btn-bounce 1s ease-in-out infinite;
 }
 
 @keyframes btn-bounce {
-0%, 100% { transform: translateY(0); box-shadow: 0 0 20px var(–green), 4px 4px 0 #004d14; }
-50% { transform: translateY(-3px); box-shadow: 0 0 30px var(–green), 4px 7px 0 #004d14; }
+0%, 100% { transform: translateY(0); box-shadow: 0 0 20px #00ff41, 4px 4px 0 #004d14; }
+50% { transform: translateY(-3px); box-shadow: 0 0 30px #00ff41, 4px 7px 0 #004d14; }
 }
 
 .btn-play:active {
 transform: translateY(2px);
-box-shadow: 0 0 10px var(–green), 2px 2px 0 #004d14;
+box-shadow: 0 0 10px #00ff41, 2px 2px 0 #004d14;
 }
 
 .hiscore-display {
 margin-top: 24px;
 font-family: ‘VT323’, monospace;
 font-size: 20px;
-color: var(–amber);
+color: #ffb000;
 text-align: center;
 }
 
@@ -236,7 +227,7 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 padding: 12px 16px 8px;
-border-bottom: 2px solid var(–green);
+border-bottom: 2px solid #00ff41;
 background: rgba(0,255,65,0.05);
 }
 
@@ -254,13 +245,13 @@ display: block;
 .hud-value {
 font-family: ‘Press Start 2P’, monospace;
 font-size: 13px;
-color: var(–green);
-text-shadow: 0 0 8px var(–green);
+color: #00ff41;
+text-shadow: 0 0 8px #00ff41;
 }
 
 #lives-display {
-color: var(–red);
-text-shadow: 0 0 8px var(–red);
+color: #ff003c;
+text-shadow: 0 0 8px #ff003c;
 font-size: 18px;
 letter-spacing: 3px;
 }
@@ -275,7 +266,7 @@ padding: 2px 6px;
 border-radius: 4px;
 line-height: 1;
 }
-#sound-toggle.on { color: var(–green); border-color: var(–green); }
+#sound-toggle.on { color: #00ff41; border-color: #00ff41; }
 
 /* Era banner */
 #era-banner {
@@ -285,8 +276,8 @@ text-align: center;
 font-family: ‘VT323’, monospace;
 font-size: 20px;
 background: rgba(0,255,255,0.1);
-border-bottom: 1px solid var(–cyan);
-color: var(–cyan);
+border-bottom: 1px solid #00ffff;
+color: #00ffff;
 letter-spacing: 3px;
 }
 
@@ -318,7 +309,7 @@ font-size: clamp(14px, 4vw, 20px);
 color: #fff;
 text-align: center;
 padding: 20px;
-border: 3px solid var(–amber);
+border: 3px solid #ffb000;
 background: rgba(255,176,0,0.08);
 box-shadow: 0 0 20px rgba(255,176,0,0.3), inset 0 0 30px rgba(255,176,0,0.05);
 min-height: 80px;
@@ -345,9 +336,9 @@ width: 100%;
 .choice-btn {
 font-family: ‘Press Start 2P’, monospace;
 font-size: 11px;
-color: var(–green);
+color: #00ff41;
 background: rgba(0,255,65,0.05);
-border: 2px solid var(–green);
+border: 2px solid #00ff41;
 padding: 14px 8px;
 cursor: pointer;
 text-align: center;
@@ -364,17 +355,17 @@ transform: scale(0.96);
 
 .choice-btn.correct {
 background: rgba(0,255,65,0.3);
-border-color: var(–green);
-color: var(–green);
-box-shadow: 0 0 20px var(–green);
+border-color: #00ff41;
+color: #00ff41;
+box-shadow: 0 0 20px #00ff41;
 animation: flash-correct 0.4s;
 }
 
 .choice-btn.wrong {
 background: rgba(255,0,60,0.3);
-border-color: var(–red);
-color: var(–red);
-box-shadow: 0 0 20px var(–red);
+border-color: #ff003c;
+color: #ff003c;
+box-shadow: 0 0 20px #ff003c;
 animation: flash-wrong 0.4s;
 }
 
@@ -400,9 +391,9 @@ overflow: hidden;
 #timer-bar {
 height: 100%;
 width: 100%;
-background: var(–green);
+background: #00ff41;
 transition: width 0.1s linear, background 0.3s;
-box-shadow: 0 0 8px var(–green);
+box-shadow: 0 0 8px #00ff41;
 min-width: 2px;
 }
 
@@ -410,8 +401,8 @@ min-width: 2px;
 #combo-display {
 font-family: ‘VT323’, monospace;
 font-size: 28px;
-color: var(–amber);
-text-shadow: 0 0 15px var(–amber);
+color: #ffb000;
+text-shadow: 0 0 15px #ffb000;
 min-height: 35px;
 text-align: center;
 }
@@ -435,8 +426,8 @@ gap: 16px;
 .go-title {
 font-family: ‘Press Start 2P’, monospace;
 font-size: clamp(20px, 6vw, 28px);
-color: var(–red);
-text-shadow: 0 0 20px var(–red), 0 0 40px rgba(255,0,60,0.5);
+color: #ff003c;
+text-shadow: 0 0 20px #ff003c, 0 0 40px rgba(255,0,60,0.5);
 text-align: center;
 animation: go-flicker 0.5s infinite;
 }
@@ -465,14 +456,14 @@ font-size: 22px;
 
 .stat-row:last-child { border-bottom: none; }
 .stat-label { color: #666; }
-.stat-value { color: var(–green); }
-.stat-value.highlight { color: var(–amber); font-size: 26px; text-shadow: 0 0 10px var(–amber); }
+.stat-value { color: #00ff41; }
+.stat-value.highlight { color: #ffb000; font-size: 26px; text-shadow: 0 0 10px #ffb000; }
 
 .new-record {
 font-family: ‘VT323’, monospace;
 font-size: 26px;
-color: var(–amber);
-text-shadow: 0 0 15px var(–amber);
+color: #ffb000;
+text-shadow: 0 0 15px #ffb000;
 text-align: center;
 animation: blink 0.5s step-end infinite;
 min-height: 32px;
@@ -483,11 +474,11 @@ min-height: 32px;
 font-family: ‘Press Start 2P’, monospace;
 font-size: 13px;
 color: #000;
-background: var(–red);
+background: #ff003c;
 border: none;
 padding: 14px 28px;
 cursor: pointer;
-box-shadow: 0 0 20px var(–red), 4px 4px 0 #800020;
+box-shadow: 0 0 20px #ff003c, 4px 4px 0 #800020;
 margin-top: 8px;
 }
 .btn-retry:active { transform: translateY(2px); }
@@ -526,7 +517,7 @@ letter-spacing: 1px;
 flex-shrink: 0;
 }
 
-#sponsor-bar span { color: var(–amber); }
+#sponsor-bar span { color: #ffb000; }
 </style>
 
 </head>
@@ -581,7 +572,7 @@ flex-shrink: 0;
   font-size: 17px;
   color: #333;
   letter-spacing: 2px;
-">BY <span style="color: var(--amber)">RETROCOMP</span> · TÜM HAKLAR SAKLIDIR</div>
+">BY <span style="color: #ffb000">RETROCOMP</span> · TÜM HAKLAR SAKLIDIR</div>
 ```
 
   </div>
@@ -1133,9 +1124,9 @@ function startTimer() {
     const pct = Math.max(0, 1 - elapsed / timeLimit);
     dom.timerBar.style.width = (pct * 100) + '%';
 
-    if (pct < 0.3) dom.timerBar.style.background = 'var(--red)';
-    else if (pct < 0.6) dom.timerBar.style.background = 'var(--amber)';
-    else dom.timerBar.style.background = 'var(--green)';
+    if (pct < 0.3) dom.timerBar.style.background = '#ff003c';
+    else if (pct < 0.6) dom.timerBar.style.background = '#ffb000';
+    else dom.timerBar.style.background = '#00ff41';
 
     if (pct <= 0) {
       clearInterval(state.timerInterval);
@@ -1285,8 +1276,8 @@ titleSoundBtn.addEventListener('click', () => {
   const isNowOn = hudBtn && hudBtn.classList.contains('on');
   if (isNowOn) {
     titleSoundBtn.textContent = '🔊 SES AÇIK';
-    titleSoundBtn.style.color = 'var(--green)';
-    titleSoundBtn.style.borderColor = 'var(--green)';
+    titleSoundBtn.style.color = '#00ff41';
+    titleSoundBtn.style.borderColor = '#00ff41';
     SFX.titleJingle();
   } else {
     titleSoundBtn.textContent = '🔇 SES KAPALI';
