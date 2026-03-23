@@ -8,6 +8,18 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
 
+/* Fallback font faces in case Google Fonts fails */
+@font-face {
+font-family: ‘Press Start 2P’;
+src: url(‘https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK0nR.woff2’) format(‘woff2’);
+font-display: swap;
+}
+@font-face {
+font-family: ‘VT323’;
+src: url(‘https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJU.woff2’) format(‘woff2’);
+font-display: swap;
+}
+
 :root {
 –green: #00ff41;
 –amber: #ffb000;
@@ -387,6 +399,7 @@ width: 100%;
 background: var(–green);
 transition: width 0.1s linear, background 0.3s;
 box-shadow: 0 0 8px var(–green);
+min-width: 2px;
 }
 
 /* Combo display */
