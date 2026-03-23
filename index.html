@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RETRO RUSH by RetroComp</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
+:root {
+–green: #00ff41;
+–amber: #ffb000;
+–cyan: #00ffff;
+–red: #ff003c;
+–dark: #0a0a0a;
+–scanline: rgba(0,0,0,0.15);
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: #000;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+font-family: ‘Press Start 2P’, monospace;
+overflow: hidden;
+touch-action: none;
+}
+
+#crt {
+position: relative;
+width: 100%;
+max-width: 420px;
+height: 100vh;
+max-height: 780px;
+background: var(–dark);
+overflow: hidden;
+border-radius: 12px;
+box-shadow:
+0 0 0 3px #222,
+0 0 0 6px #111,
+0 0 60px rgba(0,255,65,0.3),
+inset 0 0 120px rgba(0,0,0,0.8);
+}
+
+/* CRT Scanlines */
+#crt::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: repeating-linear-gradient(
+0deg,
+var(–scanline) 0px,
+var(–scanline) 1px,
+transparent 1px,
+transparent 3px
+);
+pointer-events: none;
+z-index: 100;
+}
+
+/* CRT vignette */
+#crt::after {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.8) 100%);
+pointer-events: none;
+z-index: 99;
+}
+
+/* Phosphor flicker */
+@keyframes flicker {
+0%, 100% { opacity: 1; }
+92% { opacity: 1; }
+93% { opacity: 0.92; }
+94% { opacity: 1; }
+96% { opacity: 0.95; }
+97% { opacity: 1; }
+}
+#crt { animation: flicker 8s infinite; }
+
+/* ========== SCREENS ========== */
+.screen {
+position: absolute;
+inset: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 20px;
+transition: opacity 0.3s;
+}
+.screen.hidden { display: none; }
+
+/* ========== TITLE SCREEN ========== */
+#title-screen {
+background: radial-gradient(ellipse at 50% 40%, #001a00 0%, #000 70%);
+}
+
+.title-logo {
+text-align: center;
+margin-bottom: 30px;
+}
+
+.title-logo .line1 {
+font-family: ‘Press Start 2P’, monospace;
+font-size: clamp(28px, 8vw, 42px);
+color: var(–green);
+text-shadow:
+0 0 10px var(–green),
+0 0 30px var(–green),
+0 0 60px rgba(0,255,65,0.5);
+display: block;
+letter-spacing: 4px;
+animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.title-logo .line2 {
+font-family: ‘Press Start 2P’, monospace;
+font-size: clamp(28px, 8vw, 42px);
+color: var(–amber);
+text-shadow:
+0 0 10px var(–amber),
+0 0 30px var(–amber),
+0 0 60px rgba(255,176,0,0.5);
+display: block;
+letter-spacing: 4px;
+animation: pulse-glow-amber 2s ease-in-out infinite 0.3s;
+}
+
+@keyframes pulse-glow {
+0%, 100% { text-shadow: 0 0 10px var(–green), 0 0 30px var(–green), 0 0 60px rgba(0,255,65,0.5); }
+50% { text-shadow: 0 0 20px var(–green), 0 0 50px var(–green), 0 0 100px rgba(0,255,65,0.8); }
+}
+@keyframes pulse-glow-amber {
+0%, 100% { text-shadow: 0 0 10px var(–amber), 0 0 30px var(–amber), 0 0 60px rgba(255,176,0,0.5); }
+50% { text-shadow: 0 0 20px var(–amber), 0 0 50px var(–amber), 0 0 100px rgba(255,176,0,0.8); }
+}
+
+.era-showcase {
+display: flex;
+gap: 10px;
+margin: 20px 0;
+}
+
+.era-badge {
+font-family: ‘VT323’, monospace;
+font-size: 18px;
+padding: 4px 8px;
+border: 2px solid;
+animation: badge-cycle 3s infinite;
+}
+
+.era-badge:nth-child(1) { color: var(–cyan); border-color: var(–cyan); animation-delay: 0s; }
+.era-badge:nth-child(2) { color: var(–amber); border-color: var(–amber); animation-delay: 0.5s; }
+.era-badge:nth-child(3) { color: var(–red); border-color: var(–red); animation-delay: 1s; }
+.era-badge:nth-child(4) { color: var(–green); border-color: var(–green); animation-delay: 1.5s; }
+
+@keyframes badge-cycle {
+0%, 100% { opacity: 1; transform: scale(1); }
+50% { opacity: 0.6; transform: scale(0.95); }
+}
+
+.subtitle {
+font-family: ‘VT323’, monospace;
+font-size: 22px;
+color: #888;
+margin: 10px 0 30px;
+text-align: center;
+letter-spacing: 2px;
+}
+
+.btn-play {
+font-family: ‘Press Start 2P’, monospace;
+font-size: 16px;
+color: #000;
+background: var(–green);
+border: none;
+padding: 16px 32px;
+cursor: pointer;
+text-transform: uppercase;
+letter-spacing: 2px;
+box-shadow: 0 0 20px var(–green), 4px 4px 0 #004d14;
+transition: all 0.1s;
+animation: btn-bounce 1s ease-in-out infinite;
+}
+
+@keyframes btn-bounce {
+0%, 100% { transform: translateY(0); box-shadow: 0 0 20px var(–green), 4px 4px 0 #004d14; }
+50% { transform: translateY(-3px); box-shadow: 0 0 30px var(–green), 4px 7px 0 #004d14; }
+}
+
+.btn-play:active {
+transform: translateY(2px);
+box-shadow: 0 0 10px var(–green), 2px 2px 0 #004d14;
+}
+
+.hiscore-display {
+margin-top: 24px;
+font-family: ‘VT323’, monospace;
+font-size: 20px;
+color: var(–amber);
+text-align: center;
+}
+
+/* ========== GAME SCREEN ========== */
+#game-screen {
+padding: 0;
+justify-content: flex-start;
+background: #000;
+}
+
+#hud {
+width: 100%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px 16px 8px;
+border-bottom: 2px solid var(–green);
+background: rgba(0,255,65,0.05);
+}
+
+.hud-item {
+text-align: center;
+}
+
+.hud-label {
+font-family: ‘VT323’, monospace;
+font-size: 16px;
+color: #555;
+display: block;
+}
+
+.hud-value {
+font-family: ‘Press Start 2P’, monospace;
+font-size: 13px;
+color: var(–green);
+text-shadow: 0 0 8px var(–green);
+}
+
+#lives-display {
+color: var(–red);
+text-shadow: 0 0 8px var(–red);
+font-size: 18px;
+letter-spacing: 3px;
+}
+
+#sound-toggle {
+background: none;
+border: 1px solid #333;
+color: #555;
+font-size: 18px;
+cursor: pointer;
+padding: 2px 6px;
+border-radius: 4px;
+line-height: 1;
+}
+#sound-toggle.on { color: var(–green); border-color: var(–green); }
+
+/* Era banner */
+#era-banner {
+width: 100%;
+padding: 6px;
+text-align: center;
+font-family: ‘VT323’, monospace;
+font-size: 20px;
+background: rgba(0,255,255,0.1);
+border-bottom: 1px solid var(–cyan);
+color: var(–cyan);
+letter-spacing: 3px;
+}
+
+/* Game area */
+#game-area {
+flex: 1;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 20px 16px;
+gap: 16px;
+position: relative;
+}
+
+#question-text {
+font-family: ‘VT323’, monospace;
+font-size: 22px;
+color: #aaa;
+text-align: center;
+line-height: 1.4;
+min-height: 60px;
+}
+
+#item-display {
+font-family: ‘Press Start 2P’, monospace;
+font-size: clamp(14px, 4vw, 20px);
+color: #fff;
+text-align: center;
+padding: 20px;
+border: 3px solid var(–amber);
+background: rgba(255,176,0,0.08);
+box-shadow: 0 0 20px rgba(255,176,0,0.3), inset 0 0 30px rgba(255,176,0,0.05);
+min-height: 80px;
+display: flex;
+align-items: center;
+justify-content: center;
+width: 100%;
+line-height: 1.5;
+animation: item-appear 0.3s ease-out;
+}
+
+@keyframes item-appear {
+from { transform: scale(0.8); opacity: 0; }
+to { transform: scale(1); opacity: 1; }
+}
+
+#choices {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+width: 100%;
+}
+
+.choice-btn {
+font-family: ‘Press Start 2P’, monospace;
+font-size: 11px;
+color: var(–green);
+background: rgba(0,255,65,0.05);
+border: 2px solid var(–green);
+padding: 14px 8px;
+cursor: pointer;
+text-align: center;
+line-height: 1.6;
+transition: all 0.1s;
+box-shadow: 0 0 8px rgba(0,255,65,0.2);
+-webkit-tap-highlight-color: transparent;
+}
+
+.choice-btn:active, .choice-btn.pressed {
+background: rgba(0,255,65,0.2);
+transform: scale(0.96);
+}
+
+.choice-btn.correct {
+background: rgba(0,255,65,0.3);
+border-color: var(–green);
+color: var(–green);
+box-shadow: 0 0 20px var(–green);
+animation: flash-correct 0.4s;
+}
+
+.choice-btn.wrong {
+background: rgba(255,0,60,0.3);
+border-color: var(–red);
+color: var(–red);
+box-shadow: 0 0 20px var(–red);
+animation: flash-wrong 0.4s;
+}
+
+@keyframes flash-correct {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.5; transform: scale(1.05); }
+}
+@keyframes flash-wrong {
+0%, 100% { opacity: 1; transform: translateX(0); }
+25% { transform: translateX(-5px); }
+75% { transform: translateX(5px); }
+}
+
+/* Timer bar */
+#timer-bar-container {
+width: 100%;
+height: 8px;
+background: #111;
+border: 1px solid #333;
+overflow: hidden;
+}
+
+#timer-bar {
+height: 100%;
+width: 100%;
+background: var(–green);
+transition: width 0.1s linear, background 0.3s;
+box-shadow: 0 0 8px var(–green);
+}
+
+/* Combo display */
+#combo-display {
+font-family: ‘VT323’, monospace;
+font-size: 28px;
+color: var(–amber);
+text-shadow: 0 0 15px var(–amber);
+min-height: 35px;
+text-align: center;
+}
+
+/* Screen flash feedback */
+#feedback-flash {
+position: absolute;
+inset: 0;
+pointer-events: none;
+opacity: 0;
+transition: opacity 0.1s;
+z-index: 50;
+}
+
+/* ========== GAME OVER ========== */
+#gameover-screen {
+background: radial-gradient(ellipse at 50% 40%, #1a0000 0%, #000 70%);
+gap: 16px;
+}
+
+.go-title {
+font-family: ‘Press Start 2P’, monospace;
+font-size: clamp(20px, 6vw, 28px);
+color: var(–red);
+text-shadow: 0 0 20px var(–red), 0 0 40px rgba(255,0,60,0.5);
+text-align: center;
+animation: go-flicker 0.5s infinite;
+}
+
+@keyframes go-flicker {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.8; }
+}
+
+.stats-box {
+border: 2px solid #333;
+padding: 16px 24px;
+width: 100%;
+background: rgba(255,255,255,0.03);
+}
+
+.stat-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px 0;
+border-bottom: 1px solid #222;
+font-family: ‘VT323’, monospace;
+font-size: 22px;
+}
+
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: #666; }
+.stat-value { color: var(–green); }
+.stat-value.highlight { color: var(–amber); font-size: 26px; text-shadow: 0 0 10px var(–amber); }
+
+.new-record {
+font-family: ‘VT323’, monospace;
+font-size: 26px;
+color: var(–amber);
+text-shadow: 0 0 15px var(–amber);
+text-align: center;
+animation: blink 0.5s step-end infinite;
+min-height: 32px;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+.btn-retry {
+font-family: ‘Press Start 2P’, monospace;
+font-size: 13px;
+color: #000;
+background: var(–red);
+border: none;
+padding: 14px 28px;
+cursor: pointer;
+box-shadow: 0 0 20px var(–red), 4px 4px 0 #800020;
+margin-top: 8px;
+}
+.btn-retry:active { transform: translateY(2px); }
+
+.btn-menu {
+font-family: ‘Press Start 2P’, monospace;
+font-size: 11px;
+color: #555;
+background: transparent;
+border: 1px solid #333;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+/* Pixel art decorations */
+.pixel-deco {
+font-family: ‘VT323’, monospace;
+font-size: 48px;
+opacity: 0.15;
+position: absolute;
+pointer-events: none;
+user-select: none;
+}
+
+/* Sponsor banner (simulated ad) */
+#sponsor-bar {
+width: 100%;
+padding: 8px;
+background: rgba(0,0,0,0.8);
+border-top: 1px solid #222;
+text-align: center;
+font-family: ‘VT323’, monospace;
+font-size: 16px;
+color: #444;
+letter-spacing: 1px;
+flex-shrink: 0;
+}
+
+#sponsor-bar span { color: var(–amber); }
+</style>
+
+</head>
+<body>
+<div id="crt">
+
+  <!-- TITLE SCREEN -->
+
+  <div class="screen" id="title-screen">
+    <div class="pixel-deco" style="top:10px;left:10px">👾</div>
+    <div class="pixel-deco" style="top:10px;right:10px">🕹️</div>
+    <div class="pixel-deco" style="bottom:60px;left:10px">🎮</div>
+    <div class="pixel-deco" style="bottom:60px;right:10px">💾</div>
+
+```
+<div class="title-logo">
+  <span class="line1">RETRO</span>
+  <span class="line2">RUSH</span>
+</div>
+
+<div class="era-showcase">
+  <div class="era-badge">ATARI</div>
+  <div class="era-badge">NES</div>
+  <div class="era-badge">SEGA</div>
+  <div class="era-badge">ARCADE</div>
+</div>
+
+<div class="subtitle">Retro bilgini test et!</div>
+
+<button class="btn-play" id="btn-start">▶ BAŞLA</button>
+
+<div class="hiscore-display" id="title-hiscore">HI-SCORE: 0</div>
+
+<button id="title-sound-btn" style="
+  margin-top: 18px;
+  background: none;
+  border: 2px solid #333;
+  color: #555;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  padding: 6px 18px;
+  cursor: pointer;
+  letter-spacing: 2px;
+">🔇 SES KAPALI</button>
+
+<div style="
+  position: absolute;
+  bottom: 16px;
+  width: 100%;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  color: #333;
+  letter-spacing: 2px;
+">BY <span style="color: var(--amber)">RETROCOMP</span> · TÜM HAKLAR SAKLIDIR</div>
+```
+
+  </div>
+
+  <!-- GAME SCREEN -->
+
+  <div class="screen hidden" id="game-screen">
+    <div id="hud">
+      <div class="hud-item">
+        <span class="hud-label">SKOR</span>
+        <span class="hud-value" id="score-display">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">CAN</span>
+        <span class="hud-value" id="lives-display">♥♥♥</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">SEVİYE</span>
+        <span class="hud-value" id="level-display">1</span>
+      </div>
+      <button id="sound-toggle" title="Ses aç/kapat">🔇</button>
+    </div>
+
+```
+<div id="era-banner">── ARCADE ÇAĞI ──</div>
+<div id="timer-bar-container"><div id="timer-bar"></div></div>
+
+<div id="game-area">
+  <div id="combo-display"></div>
+  <div id="question-text">Bu oyun hangi yılda çıktı?</div>
+  <div id="item-display">PAC-MAN</div>
+  <div id="choices">
+    <button class="choice-btn" data-idx="0">1978</button>
+    <button class="choice-btn" data-idx="1">1980</button>
+    <button class="choice-btn" data-idx="2">1983</button>
+    <button class="choice-btn" data-idx="3">1975</button>
+  </div>
+</div>
+<div id="feedback-flash"></div>
+
+<div id="sponsor-bar">🕹️ <span>RetroComp</span> — Retro dünyasını keşfet! ⚡</div>
+```
+
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+
+  <div class="screen hidden" id="gameover-screen">
+    <div class="go-title">GAME OVER</div>
+    <div class="stats-box">
+      <div class="stat-row">
+        <span class="stat-label">SKOR</span>
+        <span class="stat-value highlight" id="final-score">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">EN YÜKSEK</span>
+        <span class="stat-value" id="final-hiscore">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">DOĞRU</span>
+        <span class="stat-value" id="final-correct">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">EN UZUN KOMBİ</span>
+        <span class="stat-value" id="final-combo">0x</span>
+      </div>
+    </div>
+    <div class="new-record" id="new-record-text"></div>
+    <button class="btn-retry" id="btn-retry">▶ TEKRAR</button>
+    <button class="btn-menu" id="btn-menu">MENÜ</button>
+  </div>
+
+</div>
+
+<script>
+// ===================== QUESTIONS DATABASE =====================
+const questions = [
+  // ARCADE ERA
+  { era: "── ARCADE ÇAĞI ──", question: "Bu ikonik oyun hangi yılda çıktı?", item: "🟡 PAC-MAN", answer: "1980", choices: ["1978","1980","1983","1975"] },
+  { era: "── ARCADE ÇAĞI ──", question: "Uzaylıları düşüren ilk oyun?", item: "👾 SPACE INVADERS", answer: "1978", choices: ["1976","1978","1980","1982"] },
+  { era: "── ARCADE ÇAĞI ──", question: "Bu oyunun üreticisi kimdir?", item: "🐸 FROGGER", answer: "Konami", choices: ["Atari","Namco","Konami","Sega"] },
+  { era: "── ARCADE ÇAĞI ──", question: "Hangi şirket Donkey Kong'u yaptı?", item: "🦍 DONKEY KONG", answer: "Nintendo", choices: ["Sega","Atari","Capcom","Nintendo"] },
+  { era: "── ARCADE ÇAĞI ──", question: "Bu oyunun çıkış yılı?", item: "⚡ GALAGA", answer: "1981", choices: ["1980","1981","1983","1979"] },
+
+  // ATARI ERA
+  { era: "── ATARİ ÇAĞI ──", question: "Atari 2600 hangi yılda çıktı?", item: "🕹️ ATARI 2600", answer: "1977", choices: ["1975","1977","1979","1980"] },
+  { era: "── ATARİ ÇAĞI ──", question: "Bu klasik Atari oyununun türü?", item: "🏓 PONG", answer: "Spor / Tenis", choices: ["Platform","Spor / Tenis","Dövüş","Bulmaca"] },
+  { era: "── ATARİ ÇAĞI ──", question: "Pitfall! hangi platformda çıktı?", item: "🌿 PITFALL!", answer: "Atari 2600", choices: ["NES","Coleco","Atari 2600","Intellivision"] },
+
+  // NES / FAMICOM ERA
+  { era: "── NES / FAMİKOM ──", question: "Famicom Japonya'da ne zaman çıktı?", item: "🔴 NES / FAMİKOM", answer: "1983", choices: ["1981","1983","1985","1987"] },
+  { era: "── NES / FAMİKOM ──", question: "Bu oyunun ana karakterinin adı?", item: "🍄 SUPER MARIO BROS.", answer: "Mario", choices: ["Luigi","Toad","Mario","Bowser"] },
+  { era: "── NES / FAMİKOM ──", question: "The Legend of Zelda ne zaman çıktı?", item: "⚔️ THE LEGEND OF ZELDA", answer: "1986", choices: ["1984","1986","1988","1987"] },
+  { era: "── NES / FAMİKOM ──", question: "Metroid'in ana karakteri?", item: "🚀 METROID", answer: "Samus Aran", choices: ["Link","Megaman","Samus Aran","Simon Belmont"] },
+  { era: "── NES / FAMİKOM ──", question: "Mega Man hangi şirketin oyunu?", item: "🤖 MEGA MAN", answer: "Capcom", choices: ["Konami","Nintendo","Capcom","Namco"] },
+
+  // SEGA ERA
+  { era: "── SEGA ÇAĞI ──", question: "Sonic ilk olarak hangi konsolda çıktı?", item: "💙 SONIC THE HEDGEHOG", answer: "Sega Genesis", choices: ["Game Gear","Sega Master","Sega Genesis","Sega Saturn"] },
+  { era: "── SEGA ÇAĞI ──", question: "Sega Genesis'in Japonya'daki adı?", item: "🎮 SEGA GENESIS", answer: "Mega Drive", choices: ["Super Famicom","Mega Drive","Saturn","Game Gear"] },
+  { era: "── SEGA ÇAĞI ──", question: "Streets of Rage türü nedir?", item: "🥊 STREETS OF RAGE", answer: "Beat 'em up", choices: ["Dövüş","Platform","Beat 'em up","Shooter"] },
+
+  // HOME COMPUTERS
+  { era: "── EV BİLGİSAYARLARI ──", question: "Commodore 64 hangi yılda tanıtıldı?", item: "💾 COMMODore 64", answer: "1982", choices: ["1980","1982","1984","1985"] },
+  { era: "── EV BİLGİSAYARLARI ──", question: "ZX Spectrum'u kim tasarladı?", item: "🌈 ZX SPECTRUM", answer: "Clive Sinclair", choices: ["Alan Sugar","Clive Sinclair","Jack Tramiel","Steve Wozniak"] },
+  { era: "── EV BİLGİSAYARLARI ──", question: "Amiga'nın üreticisi hangi şirketti?", item: "🖥️ COMMODORE AMIGA", answer: "Commodore", choices: ["Atari","Apple","Commodore","IBM"] },
+
+  // SUPER NES / 16BIT
+  { era: "── 16-BİT ÇAĞI ──", question: "SNES hangi yıl piyasaya çıktı? (ABD)", item: "🎮 SUPER NES", answer: "1991", choices: ["1989","1990","1991","1992"] },
+  { era: "── 16-BİT ÇAĞI ──", question: "Street Fighter II'nin geliştiricisi?", item: "🥋 STREET FIGHTER II", answer: "Capcom", choices: ["SNK","Namco","Capcom","Sega"] },
+  { era: "── 16-BİT ÇAĞI ──", question: "Chrono Trigger hangi tür bir oyun?", item: "⏳ CHRONO TRIGGER", answer: "RPG", choices: ["Platform","Dövüş","RPG","Strateji"] },
+  { era: "── 16-BİT ÇAĞI ──", question: "Mortal Kombat ne zaman arcade'de çıktı?", item: "☠️ MORTAL KOMBAT", answer: "1992", choices: ["1990","1991","1992","1993"] },
+];
+
+// ===================== SOUND ENGINE =====================
+const SFX = (() => {
+  let ctx = null;
+  let muted = true; // starts muted until user enables
+
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    if (!muted) {
+      getCtx();
+    } else {
+      // Sesi kapat: BGM durdur
+      SFX && SFX.bgm && SFX.bgm.stop();
+    }
+    const btn = document.getElementById('sound-toggle');
+    if (btn) {
+      btn.textContent = muted ? '🔇' : '🔊';
+      btn.classList.toggle('on', !muted);
+    }
+  }
+
+  function playSeq(notes, eraStyle) {
+    if (muted) return;
+    const ac = getCtx();
+    let t = ac.currentTime;
+    notes.forEach(n => {
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      const filter = ac.createBiquadFilter();
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ac.destination);
+
+      osc.type = n.type || 'square';
+      osc.frequency.setValueAtTime(n.freq, t);
+      if (n.sweep) osc.frequency.linearRampToValueAtTime(n.sweep, t + n.dur);
+
+      gain.gain.setValueAtTime(n.vol || 0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + n.dur);
+
+      if (eraStyle === 'arcade') {
+        filter.type = 'bandpass'; filter.frequency.value = 1800; filter.Q.value = 1.5;
+      } else if (eraStyle === 'atari') {
+        filter.type = 'lowpass'; filter.frequency.value = 800; filter.Q.value = 2;
+      } else if (eraStyle === 'nes') {
+        filter.type = 'highpass'; filter.frequency.value = 120; filter.Q.value = 0.5;
+      } else if (eraStyle === 'sega') {
+        filter.type = 'peaking'; filter.frequency.value = 2000; filter.gain.value = 6;
+      } else if (eraStyle === 'computer') {
+        filter.type = 'lowpass'; filter.frequency.value = 600; filter.Q.value = 4;
+      } else if (eraStyle === '16bit') {
+        filter.type = 'lowshelf'; filter.frequency.value = 400; filter.gain.value = 3;
+      } else {
+        filter.type = 'allpass';
+      }
+
+      osc.start(t);
+      osc.stop(t + n.dur + 0.01);
+      t += n.dur;
+    });
+  }
+
+  function getEraStyle(eraText) {
+    if (!eraText) return 'arcade';
+    if (eraText.includes('ARCADE')) return 'arcade';
+    if (eraText.includes('ATARİ')) return 'atari';
+    if (eraText.includes('FAMİKOM') || eraText.includes('NES')) return 'nes';
+    if (eraText.includes('SEGA')) return 'sega';
+    if (eraText.includes('BİLGİSAYAR')) return 'computer';
+    if (eraText.includes('16')) return '16bit';
+    return 'arcade';
+  }
+
+  const correctSounds = {
+    arcade: (s) => playSeq([{freq:523,dur:0.07,type:'square',vol:0.2},{freq:659,dur:0.07,type:'square',vol:0.2},{freq:784,dur:0.12,type:'square',vol:0.22}], s),
+    atari:  (s) => playSeq([{freq:220,dur:0.06,type:'square',vol:0.18},{freq:440,dur:0.06,type:'square',vol:0.18},{freq:880,dur:0.1,type:'square',vol:0.2}], s),
+    nes:    (s) => playSeq([{freq:392,dur:0.05,type:'square',vol:0.2},{freq:523,dur:0.05,type:'square',vol:0.2},{freq:659,dur:0.05,type:'square',vol:0.2},{freq:784,dur:0.1,type:'square',vol:0.22}], s),
+    sega:   (s) => playSeq([{freq:440,dur:0.04,type:'sawtooth',vol:0.15},{freq:554,dur:0.04,type:'sawtooth',vol:0.15},{freq:659,dur:0.04,type:'sawtooth',vol:0.15},{freq:880,dur:0.1,type:'sawtooth',vol:0.18}], s),
+    computer:(s)=> playSeq([{freq:300,dur:0.08,type:'square',vol:0.15,sweep:600},{freq:600,dur:0.08,type:'square',vol:0.15,sweep:900}], s),
+    '16bit':(s) => playSeq([{freq:523,dur:0.04,type:'sine',vol:0.2},{freq:659,dur:0.04,type:'sine',vol:0.2},{freq:784,dur:0.04,type:'sine',vol:0.2},{freq:1047,dur:0.12,type:'sine',vol:0.22}], s),
+  };
+
+  const wrongSounds = {
+    arcade: (s) => playSeq([{freq:200,dur:0.1,type:'square',vol:0.2},{freq:150,dur:0.15,type:'square',vol:0.2},{freq:100,dur:0.2,type:'square',vol:0.18}], s),
+    atari:  (s) => playSeq([{freq:180,dur:0.08,type:'square',vol:0.2,sweep:80},{freq:80,dur:0.2,type:'square',vol:0.2}], s),
+    nes:    (s) => playSeq([{freq:160,dur:0.05,type:'square',vol:0.2},{freq:120,dur:0.05,type:'square',vol:0.2},{freq:80,dur:0.15,type:'square',vol:0.18}], s),
+    sega:   (s) => playSeq([{freq:220,dur:0.08,type:'sawtooth',vol:0.18,sweep:100},{freq:100,dur:0.18,type:'sawtooth',vol:0.18}], s),
+    computer:(s)=> playSeq([{freq:400,dur:0.05,type:'square',vol:0.15,sweep:100},{freq:100,dur:0.2,type:'square',vol:0.15}], s),
+    '16bit':(s) => playSeq([{freq:300,dur:0.06,type:'sine',vol:0.2,sweep:150},{freq:150,dur:0.2,type:'sine',vol:0.18}], s),
+  };
+
+  const timeoutSounds = {
+    arcade: (s) => playSeq([{freq:440,dur:0.08,type:'square',vol:0.18},{freq:349,dur:0.08,type:'square',vol:0.18},{freq:261,dur:0.08,type:'square',vol:0.18},{freq:196,dur:0.25,type:'square',vol:0.2}], s),
+    atari:  (s) => playSeq([{freq:300,dur:0.05,type:'square',vol:0.15,sweep:80},{freq:80,dur:0.05,type:'square',vol:0.15,sweep:40},{freq:40,dur:0.3,type:'square',vol:0.2}], s),
+    nes:    (s) => playSeq([{freq:330,dur:0.06,type:'square',vol:0.2},{freq:262,dur:0.06,type:'square',vol:0.2},{freq:196,dur:0.06,type:'square',vol:0.2},{freq:165,dur:0.3,type:'square',vol:0.2}], s),
+    sega:   (s) => playSeq([{freq:392,dur:0.06,type:'sawtooth',vol:0.15,sweep:200},{freq:200,dur:0.06,type:'sawtooth',vol:0.15,sweep:100},{freq:100,dur:0.25,type:'sawtooth',vol:0.18}], s),
+    computer:(s)=> playSeq([{freq:500,dur:0.04,type:'square',vol:0.12,sweep:50},{freq:50,dur:0.3,type:'square',vol:0.18}], s),
+    '16bit':(s) => playSeq([{freq:494,dur:0.05,type:'sine',vol:0.2},{freq:392,dur:0.05,type:'sine',vol:0.2},{freq:294,dur:0.05,type:'sine',vol:0.2},{freq:196,dur:0.25,type:'sine',vol:0.2}], s),
+  };
+
+  const comboSounds = {
+    arcade: (s) => playSeq([{freq:523,dur:0.05,type:'square',vol:0.18},{freq:659,dur:0.05,type:'square',vol:0.18},{freq:784,dur:0.05,type:'square',vol:0.18},{freq:1047,dur:0.05,type:'square',vol:0.2},{freq:1319,dur:0.12,type:'square',vol:0.22}], s),
+    atari:  (s) => playSeq([{freq:440,dur:0.05,type:'square',vol:0.18,sweep:880},{freq:880,dur:0.05,type:'square',vol:0.2,sweep:1760},{freq:1760,dur:0.1,type:'square',vol:0.22}], s),
+    nes:    (s) => playSeq([{freq:392,dur:0.04,type:'square',vol:0.2},{freq:523,dur:0.04,type:'square',vol:0.2},{freq:659,dur:0.04,type:'square',vol:0.2},{freq:784,dur:0.04,type:'square',vol:0.2},{freq:1047,dur:0.12,type:'square',vol:0.25}], s),
+    sega:   (s) => playSeq([{freq:554,dur:0.04,type:'sawtooth',vol:0.15},{freq:698,dur:0.04,type:'sawtooth',vol:0.15},{freq:880,dur:0.04,type:'sawtooth',vol:0.15},{freq:1109,dur:0.12,type:'sawtooth',vol:0.2}], s),
+    computer:(s)=> playSeq([{freq:200,dur:0.04,type:'square',vol:0.12,sweep:400},{freq:400,dur:0.04,type:'square',vol:0.14,sweep:800},{freq:800,dur:0.08,type:'square',vol:0.16,sweep:1600}], s),
+    '16bit':(s) => playSeq([{freq:659,dur:0.04,type:'sine',vol:0.2},{freq:784,dur:0.04,type:'sine',vol:0.2},{freq:988,dur:0.04,type:'sine',vol:0.2},{freq:1319,dur:0.12,type:'sine',vol:0.24}], s),
+  };
+
+  return {
+    toggleMute,
+    correct(eraText) { const s=getEraStyle(eraText); (correctSounds[s]||correctSounds.arcade)(s); },
+    wrong(eraText)   { const s=getEraStyle(eraText); (wrongSounds[s]||wrongSounds.arcade)(s); },
+    timeout(eraText) { const s=getEraStyle(eraText); (timeoutSounds[s]||timeoutSounds.arcade)(s); },
+    combo(eraText)   { const s=getEraStyle(eraText); (comboSounds[s]||comboSounds.arcade)(s); },
+
+    // ── BGM: Ambient atmosferik arka plan ──
+    bgm: {
+      _nodes: [],
+      _loopTimeout: null,
+      _currentEra: null,
+      _masterGain: null,
+
+      // Her era için farklı ambient renk: temel drone frekansı + harmonikler
+      _eraConfig: {
+        arcade:   { base: 110, harmonics: [1, 1.5, 2],    color: 'bandpass', filterFreq: 800,  vol: 0.04 },
+        atari:    { base: 82,  harmonics: [1, 2, 3],      color: 'lowpass',  filterFreq: 600,  vol: 0.035 },
+        nes:      { base: 130, harmonics: [1, 1.5, 2, 3], color: 'bandpass', filterFreq: 900,  vol: 0.038 },
+        sega:     { base: 98,  harmonics: [1, 2, 2.5],    color: 'lowpass',  filterFreq: 1000, vol: 0.032 },
+        computer: { base: 65,  harmonics: [1, 3, 5],      color: 'lowpass',  filterFreq: 500,  vol: 0.03  },
+        '16bit':  { base: 110, harmonics: [1, 1.5, 2, 4], color: 'lowpass',  filterFreq: 1200, vol: 0.035 },
+      },
+
+      play(eraText) {
+        this.stop();
+        if (muted) return;
+        this._currentEra = getEraStyle(eraText);
+        this._start();
+      },
+
+      _start() {
+        if (muted) return;
+        const ac = getCtx();
+        const era = this._currentEra || 'arcade';
+        const cfg = this._eraConfig[era] || this._eraConfig.arcade;
+
+        // Master gain — çok hafif
+        const master = ac.createGain();
+        master.gain.setValueAtTime(0, ac.currentTime);
+        master.gain.linearRampToValueAtTime(cfg.vol, ac.currentTime + 2.0); // yumuşak fade-in
+        master.connect(ac.destination);
+        this._masterGain = master;
+
+        // Her harmonik için ayrı oscillator — sine wave, çok yumuşak
+        cfg.harmonics.forEach((ratio, i) => {
+          const osc = ac.createOscillator();
+          const oscGain = ac.createGain();
+          const filter = ac.createBiquadFilter();
+          const lfo = ac.createOscillator();     // hafif titreme (vibrato/tremolo)
+          const lfoGain = ac.createGain();
+
+          filter.type = cfg.color;
+          filter.frequency.value = cfg.filterFreq;
+          filter.Q.value = 0.8;
+
+          // LFO: çok yavaş, neredeyse duyulmaz — "nefes" hissi
+          lfo.frequency.value = 0.08 + i * 0.03;
+          lfoGain.gain.value = cfg.base * ratio * 0.003; // mikro pitch drift
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+
+          // Harmonik sıra ile ses azalır
+          oscGain.gain.value = 1 / (i + 1);
+
+          osc.type = 'sine';
+          osc.frequency.value = cfg.base * ratio;
+
+          osc.connect(filter);
+          filter.connect(oscGain);
+          oscGain.connect(master);
+
+          osc.start();
+          lfo.start();
+          this._nodes.push(osc, lfo);
+        });
+
+        // Çok hafif noise layer — CRT hum hissi
+        const bufSize = ac.sampleRate * 2;
+        const buffer = ac.createBuffer(1, bufSize, ac.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.012;
+        const noise = ac.createBufferSource();
+        const noiseFilter = ac.createBiquadFilter();
+        const noiseGain = ac.createGain();
+        noise.buffer = buffer;
+        noise.loop = true;
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.value = 180;
+        noiseGain.gain.value = 0.6;
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(master);
+        noise.start();
+        this._nodes.push(noise);
+      },
+
+      stop() {
+        if (this._loopTimeout) { clearTimeout(this._loopTimeout); this._loopTimeout = null; }
+        const ac = getCtx();
+        if (this._masterGain) {
+          this._masterGain.gain.linearRampToValueAtTime(0, ac.currentTime + 0.8);
+        }
+        setTimeout(() => {
+          this._nodes.forEach(n => { try { n.stop(); } catch(e){} });
+          this._nodes = [];
+          this._masterGain = null;
+        }, 900);
+        this._currentEra = null;
+      },
+
+      updateEra(eraText) {
+        const newEra = getEraStyle(eraText);
+        if (newEra !== this._currentEra) {
+          this.play(eraText); // geçişte yeni ambient başlat
+        }
+      },
+    },
+
+    titleJingle() {
+      if (muted) return;
+      const ac = getCtx();
+      // Klasik arcade coin-up jingle — yükselen arpej + fanfar
+      const melody = [
+        {freq:262,dur:0.08,vol:0.18,type:'square'},
+        {freq:330,dur:0.08,vol:0.18,type:'square'},
+        {freq:392,dur:0.08,vol:0.18,type:'square'},
+        {freq:523,dur:0.08,vol:0.2, type:'square'},
+        {freq:659,dur:0.08,vol:0.2, type:'square'},
+        {freq:784,dur:0.08,vol:0.2, type:'square'},
+        {freq:1047,dur:0.08,vol:0.22,type:'square'},
+        {freq:1319,dur:0.22,vol:0.25,type:'square'},
+      ];
+      // Paralel harmony (oktav altı)
+      const harmony = [
+        {freq:131,dur:0.08,vol:0.1,type:'square'},
+        {freq:165,dur:0.08,vol:0.1,type:'square'},
+        {freq:196,dur:0.08,vol:0.1,type:'square'},
+        {freq:262,dur:0.08,vol:0.1,type:'square'},
+        {freq:330,dur:0.08,vol:0.1,type:'square'},
+        {freq:392,dur:0.08,vol:0.1,type:'square'},
+        {freq:523,dur:0.08,vol:0.1,type:'square'},
+        {freq:659,dur:0.22,vol:0.12,type:'square'},
+      ];
+
+      let t = ac.currentTime + 0.05;
+      [...melody, ...harmony].forEach((n, i) => {
+        const isHarmony = i >= melody.length;
+        const noteIdx = isHarmony ? i - melody.length : i;
+        const startT = ac.currentTime + 0.05 + noteIdx * 0.08;
+
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        const filter = ac.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = isHarmony ? 600 : 1600;
+        filter.Q.value = 1.2;
+
+        osc.connect(filter); filter.connect(gain); gain.connect(ac.destination);
+        osc.type = n.type;
+        osc.frequency.setValueAtTime(n.freq, startT);
+        gain.gain.setValueAtTime(n.vol, startT);
+        gain.gain.exponentialRampToValueAtTime(0.001, startT + n.dur);
+        osc.start(startT);
+        osc.stop(startT + n.dur + 0.01);
+      });
+
+      // Son nota sonrası kısa "tada" vuruşu
+      const tadaT = ac.currentTime + 0.05 + 7 * 0.08 + 0.1;
+      [523, 659, 784, 1047].forEach((freq, i) => {
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.connect(gain); gain.connect(ac.destination);
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        const st = tadaT + i * 0.04;
+        gain.gain.setValueAtTime(0.15, st);
+        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.18);
+        osc.start(st); osc.stop(st + 0.2);
+      });
+    },
+
+    gameOverJingle() {
+      if (muted) return;
+      const ac = getCtx();
+      const notes = [
+        {freq:392,dur:0.1,vol:0.2,type:'square'},
+        {freq:370,dur:0.1,vol:0.2,type:'square'},
+        {freq:349,dur:0.1,vol:0.2,type:'square'},
+        {freq:311,dur:0.15,vol:0.2,type:'square'},
+        {freq:262,dur:0.08,vol:0.18,type:'square'},
+        {freq:220,dur:0.35,vol:0.22,type:'square'},
+      ];
+      let t = ac.currentTime + 0.05;
+      notes.forEach(n => {
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        const filter = ac.createBiquadFilter();
+        filter.type = 'lowpass'; filter.frequency.value = 900;
+        osc.connect(filter); filter.connect(gain); gain.connect(ac.destination);
+        osc.type = n.type;
+        osc.frequency.setValueAtTime(n.freq, t);
+        gain.gain.setValueAtTime(n.vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + n.dur);
+        osc.start(t); osc.stop(t + n.dur + 0.01);
+        t += n.dur;
+      });
+    },
+  };
+})();
+
+// ===================== GAME STATE =====================
+let state = {
+  score: 0,
+  lives: 3,
+  level: 1,
+  combo: 0,
+  maxCombo: 0,
+  correctCount: 0,
+  hiScore: parseInt(localStorage.getItem('retroRushHi') || '0'),
+  currentQ: null,
+  questionPool: [],
+  timerInterval: null,
+  timeLeft: 100,
+  timeLimitMs: 13000,
+  answering: false,
+};
+
+// ===================== DOM =====================
+const screens = {
+  title: document.getElementById('title-screen'),
+  game: document.getElementById('game-screen'),
+  gameover: document.getElementById('gameover-screen'),
+};
+
+const dom = {
+  score: document.getElementById('score-display'),
+  lives: document.getElementById('lives-display'),
+  level: document.getElementById('level-display'),
+  era: document.getElementById('era-banner'),
+  question: document.getElementById('question-text'),
+  item: document.getElementById('item-display'),
+  choices: document.querySelectorAll('.choice-btn'),
+  timerBar: document.getElementById('timer-bar'),
+  combo: document.getElementById('combo-display'),
+  feedback: document.getElementById('feedback-flash'),
+  titleHiscore: document.getElementById('title-hiscore'),
+  finalScore: document.getElementById('final-score'),
+  finalHi: document.getElementById('final-hiscore'),
+  finalCorrect: document.getElementById('final-correct'),
+  finalCombo: document.getElementById('final-combo'),
+  newRecord: document.getElementById('new-record-text'),
+};
+
+// ===================== SCREENS =====================
+function showScreen(name) {
+  Object.values(screens).forEach(s => s.classList.add('hidden'));
+  screens[name].classList.remove('hidden');
+}
+
+// ===================== INIT GAME =====================
+function startGame() {
+  state.score = 0;
+  state.lives = 3;
+  state.level = 1;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.correctCount = 0;
+  state.questionPool = shuffle([...questions]);
+  state.answering = false;
+  updateHUD();
+  showScreen('game');
+  nextQuestion();
+  SFX.bgm.play('── ARCADE ÇAĞI ──');
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ===================== QUESTION =====================
+function nextQuestion() {
+  if (state.questionPool.length === 0) {
+    state.questionPool = shuffle([...questions]);
+  }
+
+  state.currentQ = state.questionPool.pop();
+  state.answering = false;
+
+  dom.era.textContent = state.currentQ.era;
+  dom.question.textContent = state.currentQ.question;
+  dom.item.textContent = state.currentQ.item;
+  dom.item.style.animation = 'none';
+  requestAnimationFrame(() => { dom.item.style.animation = ''; });
+  SFX.bgm.updateEra(state.currentQ.era);
+
+  // Shuffle choices
+  const shuffled = shuffle([...state.currentQ.choices]);
+  dom.choices.forEach((btn, i) => {
+    btn.textContent = shuffled[i];
+    btn.className = 'choice-btn';
+    btn.dataset.answer = shuffled[i];
+    btn.disabled = false;
+  });
+
+  startTimer();
+}
+
+// ===================== TIMER =====================
+function startTimer() {
+  clearInterval(state.timerInterval);
+  const timeLimit = Math.max(4000, state.timeLimitMs - (state.level - 1) * 300);
+  const start = Date.now();
+
+  state.timerInterval = setInterval(() => {
+    const elapsed = Date.now() - start;
+    const pct = Math.max(0, 1 - elapsed / timeLimit);
+    dom.timerBar.style.width = (pct * 100) + '%';
+
+    if (pct < 0.3) dom.timerBar.style.background = 'var(--red)';
+    else if (pct < 0.6) dom.timerBar.style.background = 'var(--amber)';
+    else dom.timerBar.style.background = 'var(--green)';
+
+    if (pct <= 0) {
+      clearInterval(state.timerInterval);
+      timeUp();
+    }
+  }, 50);
+}
+
+function timeUp() {
+  if (state.answering) return;
+  state.answering = true;
+  state.combo = 0;
+  updateCombo();
+  loseLife();
+
+  // Show correct answer
+  dom.choices.forEach(btn => {
+    if (btn.dataset.answer === state.currentQ.answer) {
+      btn.classList.add('correct');
+    }
+    btn.disabled = true;
+  });
+
+  SFX.timeout(state.currentQ.era);
+  flashScreen('rgba(255,0,60,0.15)');
+
+  setTimeout(() => {
+    if (state.lives > 0) nextQuestion();
+    else gameOver();
+  }, 1200);
+}
+
+// ===================== ANSWER =====================
+dom.choices.forEach(btn => {
+  btn.addEventListener('click', () => handleAnswer(btn));
+  btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleAnswer(btn); }, { passive: false });
+});
+
+function handleAnswer(btn) {
+  if (state.answering || btn.disabled) return;
+  state.answering = true;
+  clearInterval(state.timerInterval);
+
+  const chosen = btn.dataset.answer;
+  const correct = chosen === state.currentQ.answer;
+
+  dom.choices.forEach(b => b.disabled = true);
+
+  if (correct) {
+    btn.classList.add('correct');
+    state.combo++;
+    state.correctCount++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+    const timeBonus = Math.floor(parseFloat(dom.timerBar.style.width) * 0.5);
+    const comboBonus = state.combo > 1 ? (state.combo - 1) * 20 : 0;
+    const points = 100 + timeBonus + comboBonus;
+    state.score += points;
+    state.level = Math.floor(state.correctCount / 5) + 1;
+
+    updateCombo();
+    if (state.combo >= 2) SFX.combo(state.currentQ.era);
+    else SFX.correct(state.currentQ.era);
+    flashScreen('rgba(0,255,65,0.12)');
+    updateHUD();
+
+    setTimeout(nextQuestion, 800);
+  } else {
+    btn.classList.add('wrong');
+    dom.choices.forEach(b => {
+      if (b.dataset.answer === state.currentQ.answer) b.classList.add('correct');
+    });
+    state.combo = 0;
+    updateCombo();
+    loseLife();
+    SFX.wrong(state.currentQ.era);
+    flashScreen('rgba(255,0,60,0.2)');
+
+    setTimeout(() => {
+      if (state.lives > 0) nextQuestion();
+      else gameOver();
+    }, 1000);
+  }
+}
+
+// ===================== HELPERS =====================
+function loseLife() {
+  state.lives--;
+  updateHUD();
+}
+
+function updateHUD() {
+  dom.score.textContent = state.score;
+  dom.lives.textContent = '♥'.repeat(Math.max(0, state.lives)) + '♡'.repeat(Math.max(0, 3 - state.lives));
+  dom.level.textContent = state.level;
+}
+
+function updateCombo() {
+  if (state.combo >= 2) {
+    dom.combo.textContent = state.combo + 'x KOMBİ! 🔥';
+  } else {
+    dom.combo.textContent = '';
+  }
+}
+
+function flashScreen(color) {
+  dom.feedback.style.background = color;
+  dom.feedback.style.opacity = '1';
+  setTimeout(() => { dom.feedback.style.opacity = '0'; }, 150);
+}
+
+// ===================== GAME OVER =====================
+function gameOver() {
+  clearInterval(state.timerInterval);
+  SFX.bgm.stop();
+
+  const isNewRecord = state.score > state.hiScore;
+  if (isNewRecord) {
+    state.hiScore = state.score;
+    localStorage.setItem('retroRushHi', state.hiScore);
+  }
+
+  dom.finalScore.textContent = state.score;
+  dom.finalHi.textContent = state.hiScore;
+  dom.finalCorrect.textContent = state.correctCount;
+  dom.finalCombo.textContent = state.maxCombo + 'x';
+  dom.newRecord.textContent = isNewRecord ? '★ YENİ REKOR! ★' : '';
+  dom.titleHiscore.textContent = 'HI-SCORE: ' + state.hiScore;
+
+  setTimeout(() => {
+    showScreen('gameover');
+    SFX.gameOverJingle();
+  }, 300);
+}
+
+// ===================== BUTTONS =====================
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('btn-retry').addEventListener('click', startGame);
+document.getElementById('btn-menu').addEventListener('click', () => showScreen('title'));
+document.getElementById('sound-toggle').addEventListener('click', SFX.toggleMute);
+
+// Title screen ses butonu
+const titleSoundBtn = document.getElementById('title-sound-btn');
+titleSoundBtn.addEventListener('click', () => {
+  SFX.toggleMute();
+  const hudBtn = document.getElementById('sound-toggle');
+  const isNowOn = hudBtn && hudBtn.classList.contains('on');
+  if (isNowOn) {
+    titleSoundBtn.textContent = '🔊 SES AÇIK';
+    titleSoundBtn.style.color = 'var(--green)';
+    titleSoundBtn.style.borderColor = 'var(--green)';
+    SFX.titleJingle();
+  } else {
+    titleSoundBtn.textContent = '🔇 SES KAPALI';
+    titleSoundBtn.style.color = '#555';
+    titleSoundBtn.style.borderColor = '#333';
+  }
+});
+
+// Init
+dom.titleHiscore.textContent = 'HI-SCORE: ' + state.hiScore;
+showScreen('title');
+</script>
+
+</body>
+</html>
